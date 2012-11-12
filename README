@@ -1,0 +1,18 @@
+Plugin for GFAL2 to access data through xrootd. URLs that begin with root://
+will use this plugin. All GFAL2 functions are supported in this plugin except
+pread/pwrite and readlink/symlink (symlinks are not supported in xrootd).
+
+Build requirements:
+ - glib-2.0
+ - xrootd-devel (available in EPEL)
+ - gfal2-devel (available in EPEL-testing)
+
+To build and install:
+ - ./autogen.sh
+ - ./configure
+ - make
+ - make install
+ 
+When installed from source, GFAL_PLUGIN_DIR should be set to the installation
+directory of the plugin, by default this is /usr/local/lib/gfal2-plugins but it
+can be changed via configure options.
