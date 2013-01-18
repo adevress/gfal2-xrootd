@@ -14,7 +14,10 @@ include_directories(${GFAL2_PKG_INCLUDE_DIRS}
 
 FILE(GLOB src_xrootd "*.cpp")
 
-add_library(gfal_plugin_xrootd SHARED ${src_xrootd})
+add_library (gfal_plugin_xrootd SHARED ${src_xrootd})
+
+target_link_libraries (gfal_plugin_xrootd ${GFAL2_PKG_LIBRARIES})
+target_link_libraries (gfal_plugin_xrootd XrdClient XrdPosix) 
 
 install(TARGETS gfal_plugin_xrootd
         LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})
