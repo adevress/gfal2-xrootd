@@ -1,6 +1,6 @@
 Name:           gfal2-plugin-xrootd
 Version:        0.1.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provide xrootd support for GFAL2
 
 Group:          Applications/Internet
@@ -9,6 +9,7 @@ URL:            https://svnweb.cern.ch/trac/lcgutil/wiki/gfal2
 Source0:        https://dcameron.web.cern.ch/dcameron/dev/rpmbuild/SOURCES/%{name}-%{version}.tar.gz
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
+BuildRequires:  cmake
 BuildRequires:  glib2-devel
 BuildRequires:  gfal2-devel
 BuildRequires:  xrootd-devel
@@ -25,15 +26,11 @@ xrootd protocol (root://).
 %setup -q
 
 %build
-%configure
-make %{?_smp_mflags}
+%cmake . -DCMAKE_INSTALL_PREFIX=/
 
 %install
 rm -rf %{buildroot}
 make install DESTDIR=%{buildroot}
-
-# Remove libtool .la files
-find %{buildroot} -type f -name \*.la -exec rm -fv '{}' ';'
 
 %clean
 rm -rf %{buildroot}
@@ -48,5 +45,7 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}-%{version}/README
 
 %changelog
+* Tue May 22 2012 Alejandro Alvarez <aalvarez@cern.ch> 0.1.0-2
+- Using CMake
 * Tue May 22 2012 David Cameron <d.g.cameron@fys.uio.no> 0.1.0-1
 - Initial version
