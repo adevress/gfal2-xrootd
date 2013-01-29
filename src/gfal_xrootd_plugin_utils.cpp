@@ -54,3 +54,24 @@ void reset_stat(struct stat& st) {
   st.st_size = 0;
   st.st_uid = 0;
 }
+
+std::string sanitize_url(const char* url) {
+  const char* p = url + 7; // Jump over root://
+  p = strchr(p, '/');
+
+  std::string sanitized;
+  if (p == NULL) {
+    sanitized = std::string(url) + "///";
+  }
+  else if (strncmp(p, "///", 3) == 0) {
+    sanitized = url;
+  }
+  else if (strncmp(p, "//", 2) == 0) {
+    sanitized = std::string(url, p - url) + "/" + p;
+  }
+  else {
+    sanitized = std::string(url, p - url) + "//" + p;
+  }
+
+  return sanitized;
+}

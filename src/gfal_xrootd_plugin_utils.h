@@ -25,4 +25,7 @@ void file_mode_to_xrootd_ints(mode_t mode, int& user, int& group, int& other);
 /// Initialise all stat fields to zero
 void reset_stat(struct stat& st);
 
+/// Return the same URL, but making sure the path is always relative
+std::string sanitize_url(const char* url);
+
 #endif /* GFAL_XROOTD_PLUGIN_UTILS_H_ */

@@ -19,12 +19,15 @@
 
 #include <gfal_plugins_api.h>
 #include "gfal_xrootd_plugin_interface.h"
+#include <XrdPosix/XrdPosixXrootd.hh>
 
 extern "C" {
 
 gboolean gfal_xrootd_check_url(plugin_handle ch, const char* url,  plugin_mode mode, GError** err);
 
 gfal_plugin_interface gfal_plugin_init(gfal_handle handle, GError** err) {
+
+  static XrdPosixXrootd singleXroot;
 
   gfal_plugin_interface xrootd_plugin;
   memset(&xrootd_plugin,0,sizeof(gfal_plugin_interface)); // clear the plugin

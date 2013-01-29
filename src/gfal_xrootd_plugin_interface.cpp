@@ -43,12 +43,14 @@ void set_xrootd_log_level() {
   else XrdPosixXrootd::setDebug(0);
 }
 
-int gfal_xrootd_statG(plugin_handle handle, const char* name, struct stat* buff, GError ** err) {
+int gfal_xrootd_statG(plugin_handle handle, const char* path, struct stat* buff, GError ** err) {
+
+  std::string sanitizedUrl = sanitize_url(path);
 
   // reset stat fields
   reset_stat(*buff);
 
-  if (XrdPosixXrootd::Stat(name, buff) != 0) {
+  if (XrdPosixXrootd::Stat(sanitizedUrl.c_str(), buff) != 0) {
     g_set_error(err, 0, errno, "[%s] Failed to stat file", __func__);
     return -1;
   }
@@ -57,7 +59,9 @@ int gfal_xrootd_statG(plugin_handle handle, const char* name, struct stat* buff,
 
 gfal_file_handle gfal_xrootd_openG(plugin_handle handle, const char *path, int flag, mode_t mode, GError ** err) {
 
-  int* fd = new int(XrdPosixXrootd::Open(path, flag, mode));
+  std::string sanitizedUrl = sanitize_url(path);
+
+  int* fd = new int(XrdPosixXrootd::Open(sanitizedUrl.c_str(), flag, mode));
   if (*fd == -1) {
     g_set_error(err, 0, errno, "[%s] Failed to open file", __func__);
     delete fd;
@@ -127,7 +131,9 @@ int gfal_xrootd_closeG(plugin_handle handle, gfal_file_handle fd, GError ** err)
 
 int gfal_xrootd_mkdirpG(plugin_handle plugin_data, const char *url, mode_t mode, gboolean pflag, GError **err) {
 
-  if (XrdPosixXrootd::Mkdir(url, mode) != 0) {
+  std::string sanitizedUrl = sanitize_url(url);
+
+  if (XrdPosixXrootd::Mkdir(sanitizedUrl.c_str(), mode) != 0) {
     g_set_error(err, 0, errno, "[%s] Failed to create directory", __func__);
     return -1;
   }
@@ -136,7 +142,9 @@ int gfal_xrootd_mkdirpG(plugin_handle plugin_data, const char *url, mode_t mode,
 
 int gfal_xrootd_chmodG(plugin_handle plugin_data, const char *url, mode_t mode, GError **err) {
 
-  XrdClientAdmin client(url);
+  std::string sanitizedUrl = sanitize_url(url);
+
+  XrdClientAdmin client(sanitizedUrl.c_str());
   set_xrootd_log_level();
 
   if (!client.Connect()) {
@@ -147,7 +155,7 @@ int gfal_xrootd_chmodG(plugin_handle plugin_data, const char *url, mode_t mode, 
   int user, group, other;
   file_mode_to_xrootd_ints(mode, user, group, other);
 
-  XrdClientUrlInfo xrdurl(url);
+  XrdClientUrlInfo xrdurl(sanitizedUrl.c_str());
 
   if (!client.Chmod(xrdurl.File.c_str(), user, group, other)) {
     g_set_error(err, 0, errno, "[%s] Failed to change permissions", __func__);
@@ -158,7 +166,9 @@ int gfal_xrootd_chmodG(plugin_handle plugin_data, const char *url, mode_t mode, 
 
 int gfal_xrootd_unlinkG(plugin_handle plugin_data, const char *url, GError **err) {
 
-  if (XrdPosixXrootd::Unlink(url) != 0) {
+  std::string sanitizedUrl = sanitize_url(url);
+
+  if (XrdPosixXrootd::Unlink(sanitizedUrl.c_str()) != 0) {
     g_set_error(err, 0, errno, "[%s] Failed to delete file", __func__);
     return -1;
   }
@@ -167,7 +177,9 @@ int gfal_xrootd_unlinkG(plugin_handle plugin_data, const char *url, GError **err
 
 int gfal_xrootd_rmdirG(plugin_handle plugin_data, const char *url, GError **err) {
 
-  if (XrdPosixXrootd::Rmdir(url) != 0) {
+  std::string sanitizedUrl = sanitize_url(url);
+
+  if (XrdPosixXrootd::Rmdir(sanitizedUrl.c_str()) != 0) {
     g_set_error(err, 0, errno, "[%s] Failed to delete directory", __func__);
     return -1;
   }
@@ -176,7 +188,9 @@ int gfal_xrootd_rmdirG(plugin_handle plugin_data, const char *url, GError **err)
 
 int gfal_xrootd_accessG(plugin_handle plugin_data, const char *url, int mode, GError **err) {
 
-  if (XrdPosixXrootd::Access(url, mode) != 0) {
+  std::string sanitizedUrl = sanitize_url(url);
+
+  if (XrdPosixXrootd::Access(sanitizedUrl.c_str(), mode) != 0) {
     g_set_error(err, 0, errno, "[%s] Failed to access file or directory", __func__);
     return -1;
   }
@@ -185,7 +199,10 @@ int gfal_xrootd_accessG(plugin_handle plugin_data, const char *url, int mode, GE
 
 int gfal_xrootd_renameG(plugin_handle plugin_data, const char *oldurl, const char *urlnew, GError **err) {
 
-  if (XrdPosixXrootd::Rename(oldurl, urlnew) != 0) {
+  std::string oldSanitizedUrl = sanitize_url(oldurl);
+  std::string newSanitizedUrl = sanitize_url(urlnew);
+
+  if (XrdPosixXrootd::Rename(oldSanitizedUrl.c_str(), newSanitizedUrl.c_str()) != 0) {
     g_set_error(err, 0, errno, "[%s] Failed to rename file or directory", __func__);
     return -1;
   }
@@ -194,7 +211,9 @@ int gfal_xrootd_renameG(plugin_handle plugin_data, const char *oldurl, const cha
 
 gfal_file_handle gfal_xrootd_opendirG(plugin_handle plugin_data, const char* url, GError** err) {
 
-  DIR* dirp = XrdPosixXrootd::Opendir(url);
+  std::string sanitizedUrl = sanitize_url(url);
+
+  DIR* dirp = XrdPosixXrootd::Opendir(sanitizedUrl.c_str());
   if (!dirp) {
     g_set_error(err, 0, errno, "[%s] Failed to open dir", __func__);
     return NULL;

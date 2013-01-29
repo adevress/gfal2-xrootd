@@ -21,3 +21,6 @@ target_link_libraries (gfal_plugin_xrootd XrdClient XrdPosix)
 
 install(TARGETS gfal_plugin_xrootd
         LIBRARY DESTINATION ${PLUGIN_INSTALL_DIR})
+
+
+add_subdirectory (tests)
