@@ -1,6 +1,6 @@
 Name:           gfal2-plugin-xrootd
-Version:        0.1.0
-Release:        2%{?dist}
+Version:        0.1.1
+Release:        1%{?dist}
 Summary:        Provide xrootd support for GFAL2
 
 Group:          Applications/Internet
@@ -45,7 +45,9 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}-%{version}/README
 
 %changelog
-* Tue May 22 2012 Alejandro Alvarez <aalvarez@cern.ch> 0.1.0-2
+* Tue Jan 29 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.1-1
+- All URL's are treated as full path
+* Fri Jan 18 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.0-2
 - Using CMake
 * Tue May 22 2012 David Cameron <d.g.cameron@fys.uio.no> 0.1.0-1
 - Initial version
