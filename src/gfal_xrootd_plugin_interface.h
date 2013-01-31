@@ -19,7 +19,12 @@
 
 #include <gfal_plugins_api.h>
 
+#define XROOTD_CONFIG_GROUP "XROOT PLUGIN"
+
 extern "C" {
+
+extern GQuark xrootd_domain;
+
 
 int gfal_xrootd_statG(plugin_handle handle, const char* name, struct stat* buff, GError ** err);
 
@@ -50,6 +55,15 @@ gfal_file_handle gfal_xrootd_opendirG(plugin_handle plugin_data, const char* url
 struct dirent* gfal_xrootd_readdirG(plugin_handle plugin_data, gfal_file_handle dir_desc, GError** err);
 
 int gfal_xrootd_closedirG(plugin_handle plugin_data, gfal_file_handle dir_desc, GError** err);
+
+int gfal_xrootd_3rdcopy_check(plugin_handle plugin_data,
+                              const char* src, const char* dst,
+                              gfal_url2_check check);
+
+int gfal_xrootd_3rd_copy(plugin_handle plugin_data, gfal2_context_t context,
+                         gfalt_params_t params,
+                         const char* src, const char* dst,
+                         GError** err);
 
 const char* gfal_xrootd_getName();
 

@@ -68,6 +68,9 @@ gfal_plugin_interface gfal_plugin_init(gfal_handle handle, GError** err) {
   xrootd_plugin.readlinkG = NULL; // symlinks not supported on xrootd
   xrootd_plugin.symlinkG = NULL; // symlinks not supported on xrootd
 
+  xrootd_plugin.check_plugin_url_transfer = gfal_xrootd_3rdcopy_check;
+  xrootd_plugin.copy_file = gfal_xrootd_3rd_copy;
+
   xrootd_plugin.plugin_delete = NULL; // &gfal_xrootd_destroyG;
 
   return xrootd_plugin;
