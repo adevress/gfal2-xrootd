@@ -16,12 +16,86 @@
 
 #include <ctype.h>
 #include <gfal_plugins_api.h>
+#include <transfer/gfal_transfer.h>
+#include <transfer/gfal_transfer_plugins.h>
+#include <transfer/gfal_transfer_types.h>
 #include "gfal_xrootd_plugin_interface.h"
 
 #undef TRUE
 #undef FALSE
 
-#include <XrdCl/XrdClThirdPartyCopyJob.hh>
+#include <XrdCl/XrdClCopyProcess.hh>
+
+#define XROOTD_DEFAULT_CHECKSUM "COPY_CHECKSUM_TYPE"
+
+
+
+class CopyFeedback: public XrdCl::CopyProgressHandler {
+public:
+  CopyFeedback(gfalt_params_t p): params(p), startTime(0)
+  {
+    this->monitorCallback = gfalt_get_monitor_callback(this->params, NULL);
+    monitorCallbackData = gfalt_transfer_status_create(&this->status);
+  }
+
+  virtual ~CopyFeedback()
+  {
+    gfalt_transfer_status_delete(this->monitorCallbackData);
+  }
+
+
+  void BeginJob(uint16_t jobNum, uint16_t jobTotal,
+                const XrdCl::URL *source, const XrdCl::URL *destination)
+  {
+    this->startTime   = time(NULL);
+    this->source      = source->GetURL();
+    this->destination = destination->GetURL();
+
+    plugin_trigger_event(this->params, xrootd_domain,
+                         GFAL_EVENT_NONE, GFAL_EVENT_TRANSFER_ENTER,
+                         "%s => %s",
+                         this->source.c_str(), this->destination.c_str());
+  }
+
+
+  void EndJob(const XrdCl::XRootDStatus &status)
+  {
+    plugin_trigger_event(this->params, xrootd_domain,
+                         GFAL_EVENT_NONE, GFAL_EVENT_TRANSFER_EXIT,
+                         "%s", status.ToStr().c_str());
+  }
+
+
+  void JobProgress(uint64_t bytesProcessed, uint64_t bytesTotal)
+  {
+    if (this->monitorCallback) {
+      time_t now = time(NULL);
+      time_t elapsed = now - this->startTime;
+
+      this->status.status           = 0;
+      this->status.bytes_transfered = bytesProcessed;
+      this->status.transfer_time    = elapsed;
+      if (elapsed > 0)
+        this->status.average_baudrate = bytesProcessed / elapsed;
+      this->status.instant_baudrate   = this->status.average_baudrate;
+
+      this->monitorCallback(this->monitorCallbackData,
+                            this->source.c_str(), this->destination.c_str(),
+                            NULL);
+    }
+  }
+
+
+private:
+  gfalt_params_t     params;
+  gfalt_monitor_func monitorCallback;
+
+  gfalt_transfer_status_t monitorCallbackData;
+  gfalt_hook_transfer_plugin_t status;
+  time_t startTime;
+
+  std::string source, destination;
+};
 
 
 
@@ -42,16 +116,63 @@ int gfal_xrootd_3rd_copy(plugin_handle plugin_data, gfal2_context_t context,
                          const char* src, const char* dst,
                          GError** err)
 {
-  XrdCl::ThirdPartyCopyJob thirdPartyCopy(src, dst);
-  XrdCl::XRootDStatus status = thirdPartyCopy.Run(NULL);
+  GError* internalError = NULL;
 
-  if (status.IsOK()) {
-    return 0;
+  XrdCl::JobDescriptor job;
+
+  job.source.FromString(src);
+  job.target.FromString(dst);
+  job.force              = false;
+  job.posc               = true;
+  job.thirdParty         = true;
+  job.thirdPartyFallBack = false;
+  job.checkSumPrint      = false;
+
+  char checksumType[64];
+  char checksumValue[512];
+  gfalt_get_user_defined_checksum(params,
+                                  checksumType, sizeof(checksumType),
+                                  checksumValue, sizeof(checksumValue),
+                                  NULL);
+  if (!checksumType[0] || !checksumValue[0]) {
+    char* defaultChecksumType = gfal2_get_opt_string(context,
+                                                     XROOTD_CONFIG_GROUP, XROOTD_DEFAULT_CHECKSUM,
+                                                     &internalError);
+    if (internalError) {
+      g_propagate_prefixed_error   (err, internalError,
+                                    "[%s]", __func__);
+      return -1;
+    }
+
+    strncpy(checksumType, defaultChecksumType, sizeof(checksumType));
+    g_free(defaultChecksumType);
   }
-  else {
+
+  job.checkSumType   = checksumType;
+  job.checkSumPreset = checksumValue;
+
+  XrdCl::CopyProcess process;
+  process.AddJob(&job);
+
+
+  XrdCl::XRootDStatus status = process.Prepare();
+  if (!status.IsOK()) {
     g_set_error(err, 0, status.errNo,
-                "[%s] Error on XrdCl::ThirdPartyCopyJob: %s",
+                "[%s] Error on XrdCl::CopyProcess::Prepare(): %s",
                 __func__, status.GetErrorMessage().c_str());
     return -1;
   }
+
+
+  CopyFeedback feedback(params);
+  status = process.Run(&feedback);
+
+  if (!status.IsOK()) {
+    g_set_error(err, 0, status.errNo,
+                "[%s] Error on XrdCl::CopyProcess::Run(): %s",
+                __func__, status.GetErrorMessage().c_str());
+    return -1;
+  }
+
+  return 0;
 }
