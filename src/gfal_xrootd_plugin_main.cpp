@@ -68,6 +68,8 @@ gfal_plugin_interface gfal_plugin_init(gfal_handle handle, GError** err) {
   xrootd_plugin.readlinkG = NULL; // symlinks not supported on xrootd
   xrootd_plugin.symlinkG = NULL; // symlinks not supported on xrootd
 
+  xrootd_plugin.checksum_calcG = &gfal_xrootd_checksumG;
+
   xrootd_plugin.check_plugin_url_transfer = gfal_xrootd_3rdcopy_check;
   xrootd_plugin.copy_file = gfal_xrootd_3rd_copy;
 
@@ -92,6 +94,7 @@ gboolean gfal_xrootd_check_url(plugin_handle ch, const char* url, plugin_mode mo
       case GFAL_PLUGIN_ACCESS:
       case GFAL_PLUGIN_RENAME:
       case GFAL_PLUGIN_OPENDIR:
+      case GFAL_PLUGIN_CHECKSUM:
         ret = TRUE;
         break;
       default:

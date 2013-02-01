@@ -256,6 +256,53 @@ int gfal_xrootd_closedirG(plugin_handle plugin_data, gfal_file_handle dir_desc, 
   return res;
 }
 
+int gfal_xrootd_checksumG(plugin_handle data, const char* url, const char* check_type,
+                          char * checksum_buffer, size_t buffer_length,
+                          off_t start_offset, size_t data_length,
+                          GError ** err) {
+
+  std::string sanitizedUrl = sanitize_url(url);
+  std::string lowerChecksumType = predefinedChecksumTypeToLower(check_type);
+
+  if (start_offset != 0 || data_length != 0) {
+      g_set_error(err, xrootd_domain, ENOTSUP,
+                  "[%s] XROOTD does not support partial checksums",
+                  __func__);
+      return -1;
+  }
+
+  time_t mTime;
+  if (XrdPosixXrootd::QueryChksum(sanitizedUrl.c_str(), mTime,
+                                  checksum_buffer, buffer_length) < 0) {
+    g_set_error(err, xrootd_domain, errno,
+                "[%s] Could not get the checksum",
+                __func__);
+    return -1;
+  }
+
+  // Note that the returned value is "type value"
+  char* space = ::index(checksum_buffer, ' ');
+  if (!space) {
+    g_set_error(err, xrootd_domain, errno,
+                "[%s] Could not get the checksum (Wrong format)",
+                __func__);
+    return -1;
+  }
+  *space = '\0';
+
+  if (strncmp(checksum_buffer, lowerChecksumType.c_str(),
+              lowerChecksumType.length()) != 0) {
+    g_set_error(err, xrootd_domain, errno,
+                "[%s] Got '%s' while expecting '%s'",
+                __func__, checksum_buffer, lowerChecksumType.c_str());
+    return -1;
+  }
+
+  strcpy(checksum_buffer, space + 1);
+
+  return 0;
+}
+
 
 const char* gfal_xrootd_getName() {
   return "xrootd";

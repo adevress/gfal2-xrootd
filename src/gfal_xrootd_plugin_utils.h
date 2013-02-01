@@ -17,7 +17,8 @@
 #ifndef GFAL_XROOTD_PLUGIN_UTILS_H_
 #define GFAL_XROOTD_PLUGIN_UTILS_H_
 
-#include <XrdClient/XrdClient.hh>
+#include <string>
+#include <sys/stat.h>
 
 /// Convert file mode_t to ints
 void file_mode_to_xrootd_ints(mode_t mode, int& user, int& group, int& other);

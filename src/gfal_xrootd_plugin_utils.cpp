@@ -15,6 +15,7 @@
  */
 
 #include <algorithm>
+#include <string.h>
 #include <fcntl.h>
 
 #include "gfal_xrootd_plugin_utils.h"

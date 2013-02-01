@@ -56,6 +56,11 @@ struct dirent* gfal_xrootd_readdirG(plugin_handle plugin_data, gfal_file_handle 
 
 int gfal_xrootd_closedirG(plugin_handle plugin_data, gfal_file_handle dir_desc, GError** err);
 
+int gfal_xrootd_checksumG(plugin_handle data, const char* url, const char* check_type,
+                          char * checksum_buffer, size_t buffer_length,
+                          off_t start_offset, size_t data_length,
+                          GError ** err);
+
 int gfal_xrootd_3rdcopy_check(plugin_handle plugin_data,
                               const char* src, const char* dst,
                               gfal_url2_check check);
