@@ -20,6 +20,7 @@
 #include <transfer/gfal_transfer_plugins.h>
 #include <transfer/gfal_transfer_types.h>
 #include "gfal_xrootd_plugin_interface.h"
+#include "gfal_xrootd_plugin_utils.h"
 
 #undef TRUE
 #undef FALSE
@@ -120,9 +121,9 @@ int gfal_xrootd_3rd_copy(plugin_handle plugin_data, gfal2_context_t context,
 
   XrdCl::JobDescriptor job;
 
-  job.source.FromString(src);
-  job.target.FromString(dst);
-  job.force              = false;
+  job.source.FromString(sanitize_url(src));
+  job.target.FromString(sanitize_url(dst));
+  job.force              = gfalt_get_replace_existing_file(params, NULL);;
   job.posc               = true;
   job.thirdParty         = true;
   job.thirdPartyFallBack = false;
