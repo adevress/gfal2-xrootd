@@ -19,7 +19,7 @@
 
 #include <gfal_plugins_api.h>
 
-#define XROOTD_CONFIG_GROUP "XROOT PLUGIN"
+#define XROOTD_CONFIG_GROUP "XROOTD PLUGIN"
 
 extern "C" {
 
