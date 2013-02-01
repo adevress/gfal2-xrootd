@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+#include <algorithm>
 #include <fcntl.h>
 
 #include "gfal_xrootd_plugin_utils.h"
@@ -74,4 +75,17 @@ std::string sanitize_url(const char* url) {
   }
 
   return sanitized;
+}
+
+std::string predefinedChecksumTypeToLower(const std::string& type)
+{
+  std::string lowerForm(type);
+  std::transform(lowerForm.begin(), lowerForm.end(), lowerForm.begin(), ::tolower);
+
+  if (lowerForm == "adler32" ||
+      lowerForm == "crc32" ||
+      lowerForm == "md5")
+    return lowerForm;
+  else
+    return type;
 }

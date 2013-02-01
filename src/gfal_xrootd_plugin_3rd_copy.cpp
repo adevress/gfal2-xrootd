@@ -149,7 +149,7 @@ int gfal_xrootd_3rd_copy(plugin_handle plugin_data, gfal2_context_t context,
     g_free(defaultChecksumType);
   }
 
-  job.checkSumType   = checksumType;
+  job.checkSumType   = predefinedChecksumTypeToLower(checksumType);
   job.checkSumPreset = checksumValue;
 
   XrdCl::CopyProcess process;
