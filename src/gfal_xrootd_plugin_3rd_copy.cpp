@@ -140,8 +140,10 @@ int gfal_xrootd_3rd_copy(plugin_handle plugin_data, gfal2_context_t context,
                                                      XROOTD_CONFIG_GROUP, XROOTD_DEFAULT_CHECKSUM,
                                                      &internalError);
     if (internalError) {
-      g_propagate_prefixed_error   (err, internalError,
-                                    "[%s]", __func__);
+      g_set_error(err, xrootd_domain,
+                  internalError->code,
+                  "[%s] %s", __func__, internalError->message);
+      g_error_free(internalError);
       return -1;
     }
 
