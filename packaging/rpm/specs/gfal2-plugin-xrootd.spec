@@ -1,6 +1,6 @@
 Name:           gfal2-plugin-xrootd
 Version:        0.1.1
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provide xrootd support for GFAL2
 
 Group:          Applications/Internet
@@ -12,7 +12,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 BuildRequires:  cmake
 BuildRequires:  glib2-devel
 BuildRequires:  gfal2-devel
-BuildRequires:  xrootd-devel
+BuildRequires:  xrootd-client-devel
 
 %description
 The Grid File Access Library, GFAL2, provides a simple POSIX-like API for file
@@ -45,9 +45,12 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}-%{version}/README
 
 %changelog
+* Thu Mar 21 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.1-2
+- Update to compile with xrootd 3.3.1
 * Tue Jan 29 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.1-1
 - All URL's are treated as full path
 * Fri Jan 18 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.0-2
 - Using CMake
 * Tue May 22 2012 David Cameron <d.g.cameron@fys.uio.no> 0.1.0-1
 - Initial version
+
