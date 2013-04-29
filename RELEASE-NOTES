@@ -1,0 +1,11 @@
+* Thu Mar 21 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.1-2
+- Update to compile with xrootd 3.3.1
+
+* Tue Jan 29 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.1-1
+- All URL's are treated as full path
+
+* Fri Jan 18 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.0-2
+- Using CMake
+
+* Tue May 22 2012 David Cameron <d.g.cameron@fys.uio.no> 0.1.0-1
+- Initial version
