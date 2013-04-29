@@ -17,5 +17,5 @@ find_package(PkgConfig REQUIRED)
 
 add_subdirectory (src)
 
-install(FILES "README"
+install(FILES "README" "LICENSE" "RELEASE-NOTES"
         DESTINATION ${DOC_INSTALL_DIR})

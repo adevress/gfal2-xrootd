@@ -42,7 +42,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_libdir}/%{pkgdir}/libgfal_plugin_xrootd.so
-%{_docdir}/%{name}-%{version}/README
+%{_docdir}/%{name}-%{version}/*
 
 %changelog
 * Thu Mar 21 2013 Alejandro Alvarez <aalvarez@cern.ch> 0.1.1-2
