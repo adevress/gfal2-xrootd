@@ -17,24 +17,3 @@
 * Authors : David Cameron, Alejandro Alvarez Ayllon, Adrien Devresse
 * 
 */
-
-
-#ifndef GFAL_XROOTD_PLUGIN_MAIN_H_
-#define GFAL_XROOTD_PLUGIN_MAIN_H_
-
-#include <gfal_plugins_api.h>
-
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
-// Entry point of the plugin
-gfal_plugin_interface gfal_plugin_init(gfal_handle handle, GError** err);
-
-
-#ifdef __cplusplus
-}
-#endif
-
-#endif /* GFAL_XROOTD_PLUGIN_MAIN_H_ */
