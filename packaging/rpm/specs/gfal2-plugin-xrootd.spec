@@ -47,25 +47,6 @@ rm -rf %{buildroot}
 
 %changelog
 * Wed May 08 2013 Adrien Devresse <adevress at cern.ch> - 0.2.2-2
- - packaging fixfrom review comments
+ - First EPEL compatible version from review comments
 
-
-* Mon Apr 29 2013 Adrien Devresse <adevress at cern.ch> - 0.2.2-1
- - support for 3rd party copy with xrootd
- - correct compilation problem with 32 bits
- - correct EL5 compilation problem
- - Normalize spec file for EPEL
- - switch the copyright ownership to EMI
-
-* Thu Mar 21 2013 Alejandro Alvarez <aalvarez@cern.ch> - 0.1.1-2
-- Update to compile with xrootd 3.3.1
-
-* Tue Jan 29 2013 Alejandro Alvarez <aalvarez@cern.ch> - 0.1.1-1
-- All URL's are treated as full path
-
-* Fri Jan 18 2013 Alejandro Alvarez <aalvarez@cern.ch> - 0.1.0-2
-- Using CMake
-
-* Tue May 22 2012 David Cameron <d.g.cameron@fys.uio.no> - 0.1.0-1
-- Initial version
 
