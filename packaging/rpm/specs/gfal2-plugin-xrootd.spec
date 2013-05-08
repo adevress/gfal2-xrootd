@@ -10,7 +10,6 @@ Source0:        http://grid-deployment.web.cern.ch/grid-deployment/dms/lcgutil/t
 BuildRoot:      %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 
 BuildRequires:  cmake
-BuildRequires:  glib2-devel
 BuildRequires:  gfal2-devel
 BuildRequires:  xrootd-client-devel
 
@@ -28,6 +27,7 @@ xrootd protocol (root://).
 %build
 %cmake \
 -DCMAKE_INSTALL_PREFIX=/ .
+make %{?_smp_mflags}
 
 %install
 rm -rf %{buildroot}
