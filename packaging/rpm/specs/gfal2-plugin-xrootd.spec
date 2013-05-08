@@ -1,6 +1,6 @@
 Name:           gfal2-plugin-xrootd
 Version:        0.2.2
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        Provide xrootd support for GFAL2
 
 Group:          Applications/Internet
@@ -46,6 +46,10 @@ rm -rf %{buildroot}
 %{_docdir}/%{name}-%{version}/*
 
 %changelog
+* Wed May 08 2013 Adrien Devresse <adevress at cern.ch> - 0.2.2-2
+ - packaging fixfrom review comments
+
+
 * Mon Apr 29 2013 Adrien Devresse <adevress at cern.ch> - 0.2.2-1
  - support for 3rd party copy with xrootd
  - correct compilation problem with 32 bits
