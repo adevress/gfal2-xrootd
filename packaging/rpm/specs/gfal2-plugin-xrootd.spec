@@ -1,3 +1,6 @@
+# unversionned doc dir F20 change https://fedoraproject.org/wiki/Changes/UnversionedDocdirs
+%{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
+
 Name:           gfal2-plugin-xrootd
 Version:        0.2.2
 Release:        2%{?dist}
@@ -26,7 +29,10 @@ xrootd protocol (root://).
 
 %build
 %cmake \
--DCMAKE_INSTALL_PREFIX=/ .
+-DCMAKE_INSTALL_PREFIX=/ \
+-DDOC_INSTALL_DIR=%{_pkgdocdir} \
+ . 
+
 make %{?_smp_mflags}
 
 %install
@@ -43,7 +49,7 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %{_libdir}/%{pkgdir}/libgfal_plugin_xrootd.so
-%{_docdir}/%{name}-%{version}/*
+%{_pkgdocdir}/*
 
 %changelog
 * Wed May 08 2013 Adrien Devresse <adevress at cern.ch> - 0.2.2-2
