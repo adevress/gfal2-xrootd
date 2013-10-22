@@ -2,8 +2,8 @@
 %{!?_pkgdocdir: %global _pkgdocdir %{_docdir}/%{name}-%{version}}
 
 Name:           gfal2-plugin-xrootd
-Version:        0.2.2
-Release:        3%{?dist}
+Version:        0.3.0
+Release:        1%{?dist}
 Summary:        Provide xrootd support for GFAL2
 
 Group:          Applications/Internet
@@ -53,6 +53,9 @@ rm -rf %{buildroot}
 %{_pkgdocdir}/*
 
 %changelog
+* Tue Oct 22 2013 Alejandro Alvarez <aalvarez at cern.ch> - 0.3.0-1
+ - New release
+
 * Tue Oct 22 2013 Alejandro Alvarez <aalvarez at cern.ch> - 0.2.2-3
  - Added configuration file
 
