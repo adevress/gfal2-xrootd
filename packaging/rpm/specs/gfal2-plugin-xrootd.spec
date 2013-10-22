@@ -3,7 +3,7 @@
 
 Name:           gfal2-plugin-xrootd
 Version:        0.2.2
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        Provide xrootd support for GFAL2
 
 Group:          Applications/Internet
@@ -48,10 +48,14 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
+%config(noreplace) %{_sysconfdir}/gfal2.d/xrootd_plugin.conf
 %{_libdir}/%{pkgdir}/libgfal_plugin_xrootd.so
 %{_pkgdocdir}/*
 
 %changelog
+* Tue Oct 22 2013 Alejandro Alvarez <aalvarez at cern.ch> - 0.2.2-3
+ - Added configuration file
+
 * Wed May 08 2013 Adrien Devresse <adevress at cern.ch> - 0.2.2-2
  - First EPEL compatible version from review comments
 
