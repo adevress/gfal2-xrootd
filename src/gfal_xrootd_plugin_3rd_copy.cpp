@@ -134,30 +134,35 @@ int gfal_xrootd_3rd_copy(plugin_handle plugin_data, gfal2_context_t context,
   job.thirdPartyFallBack = false;
   job.checkSumPrint      = false;
 
-  char checksumType[64];
-  char checksumValue[512];
-  gfalt_get_user_defined_checksum(params,
-                                  checksumType, sizeof(checksumType),
-                                  checksumValue, sizeof(checksumValue),
-                                  NULL);
-  if (!checksumType[0] || !checksumValue[0]) {
-    char* defaultChecksumType = gfal2_get_opt_string(context,
-                                                     XROOTD_CONFIG_GROUP, XROOTD_DEFAULT_CHECKSUM,
-                                                     &internalError);
-    if (internalError) {
-      g_set_error(err, xrootd_domain,
-                  internalError->code,
-                  "[%s] %s", __func__, internalError->message);
-      g_error_free(internalError);
-      return -1;
+  char checksumType[64] = {0};
+  char checksumValue[512] = {0};
+
+  bool performChecksum = gfalt_get_checksum_check(params, NULL);
+
+  if (performChecksum) {
+    gfalt_get_user_defined_checksum(params,
+                                    checksumType, sizeof(checksumType),
+                                    checksumValue, sizeof(checksumValue),
+                                    NULL);
+    if (!checksumType[0] || !checksumValue[0]) {
+      char* defaultChecksumType = gfal2_get_opt_string(context,
+                                                       XROOTD_CONFIG_GROUP, XROOTD_DEFAULT_CHECKSUM,
+                                                       &internalError);
+      if (internalError) {
+        g_set_error(err, xrootd_domain,
+                    internalError->code,
+                    "[%s] %s", __func__, internalError->message);
+        g_error_free(internalError);
+        return -1;
+      }
+
+      strncpy(checksumType, defaultChecksumType, sizeof(checksumType));
+      g_free(defaultChecksumType);
     }
 
-    strncpy(checksumType, defaultChecksumType, sizeof(checksumType));
-    g_free(defaultChecksumType);
+    job.checkSumType   = predefinedChecksumTypeToLower(checksumType);
+    job.checkSumPreset = checksumValue;
   }
-
-  job.checkSumType   = predefinedChecksumTypeToLower(checksumType);
-  job.checkSumPreset = checksumValue;
 
   XrdCl::CopyProcess process;
   process.AddJob(&job);
